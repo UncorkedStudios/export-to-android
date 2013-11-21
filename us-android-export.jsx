@@ -11,13 +11,15 @@
 
 // Photoshop variables
 
-var docRef = app.activeDocument;
-activeLayer = docRef.activeLayer;
+var docRef = app.activeDocument,
+	activeLayer = docRef.activeLayer;
 
 
 // Run main function
+
 init();
 
+// The other functions
 
 function init() {
 	saveFunc('xxhdpi');
@@ -53,12 +55,13 @@ function resizeDoc(document, scale) {
 }
 
 function dupToNewFile() {	
-	var fileName = activeLayer.name.replace(/\.[^\.]+$/, ''); 
-	var calcWidth  = activeLayer.bounds[2] - activeLayer.bounds[0];
-	var calcHeight = activeLayer.bounds[3] - activeLayer.bounds[1];
-	var docResolution = docRef.resolution;
-	var document = app.documents.add(calcWidth, calcHeight, docResolution, fileName, NewDocumentMode.RGB,
+	var fileName = activeLayer.name.replace(/\.[^\.]+$/, ''), 
+		calcWidth  = activeLayer.bounds[2] - activeLayer.bounds[0],
+		calcHeight = activeLayer.bounds[3] - activeLayer.bounds[1],
+		docResolution = docRef.resolution,
+		document = app.documents.add(calcWidth, calcHeight, docResolution, fileName, NewDocumentMode.RGB,
 		DocumentFill.TRANSPARENT);
+
 	app.activeDocument = docRef;
 
 	activeLayer.duplicate(document, ElementPlacement.INSIDE);
@@ -67,31 +70,6 @@ function dupToNewFile() {
 	activeLayer2 = document.activeLayer;
 	activeLayer2.translate(-activeLayer2.bounds[0],-activeLayer2.bounds[1]);
 	activeLayer2.merge();
-
-	// CREATE SLICE FROM LAYER =======================================================
-	var idMk = charIDToTypeID( "Mk  " );
-	    var desc15 = new ActionDescriptor();
-	    var idnull = charIDToTypeID( "null" );
-	        var ref8 = new ActionReference();
-	        var idslice = stringIDToTypeID( "slice" );
-	        ref8.putClass( idslice );
-	    desc15.putReference( idnull, ref8 );
-	    var idUsng = charIDToTypeID( "Usng" );
-	        var desc16 = new ActionDescriptor();
-	        var idType = charIDToTypeID( "Type" );
-	        var idsliceType = stringIDToTypeID( "sliceType" );
-	        var idLyr = charIDToTypeID( "Lyr " );
-	        desc16.putEnumerated( idType, idsliceType, idLyr );
-	        var idLyr = charIDToTypeID( "Lyr " );
-	            var ref9 = new ActionReference();
-	            var idLyr = charIDToTypeID( "Lyr " );
-	            var idOrdn = charIDToTypeID( "Ordn" );
-	            var idTrgt = charIDToTypeID( "Trgt" );
-	            ref9.putEnumerated( idLyr, idOrdn, idTrgt );
-	        desc16.putReference( idLyr, ref9 );
-	    var idslice = stringIDToTypeID( "slice" );
-	    desc15.putObject( idUsng, idslice, desc16 );
-	executeAction( idMk, desc15, DialogModes.NO );	
 }
 
 function saveFunc(dpi) {
@@ -99,11 +77,11 @@ function saveFunc(dpi) {
 	var docRef2 = app.activeDocument;
 	resizeDoc(docRef2, dpi);
 
-	var Name = docRef2.name.replace(/\.[^\.]+$/, ''); 
-	var Ext = decodeURI(docRef2.name).replace(/^.*\./,''); 
-	var Path = docRef.path;
-
-	var folder = Folder(Path + '/assets/' + dpi);
+	var Name = docRef2.name.replace(/\.[^\.]+$/, ''), 
+		Ext = decodeURI(docRef2.name).replace(/^.*\./,''), 
+		Path = docRef.path,
+		folder = Folder(Path + '/assets/' + dpi);
+		
 	if(!folder.exists) {
 		folder.create();
 	}
@@ -111,12 +89,12 @@ function saveFunc(dpi) {
 	var saveFile = File(folder + "/" + Name +".png");
 
 	var sfwOptions = new ExportOptionsSaveForWeb(); 
-	   sfwOptions.format = SaveDocumentType.PNG; 
-	   sfwOptions.includeProfile = false; 
-	   sfwOptions.interlaced = 0; 
-	   sfwOptions.optimized = true; 
-	   sfwOptions.quality = 100;
-	   sfwOptions.PNG8 = false;
+		sfwOptions.format = SaveDocumentType.PNG; 
+		sfwOptions.includeProfile = false; 
+		sfwOptions.interlaced = 0; 
+		sfwOptions.optimized = true; 
+		sfwOptions.quality = 100;
+		sfwOptions.PNG8 = false;
 
 	activeDocument.exportDocument(saveFile, ExportType.SAVEFORWEB, sfwOptions);
 	activeDocument.close(SaveOptions.DONOTSAVECHANGES);
