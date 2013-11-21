@@ -1,18 +1,31 @@
-/*
+/*!
+ * Android Assets for Photoshop
+ * =============================
+ *
+ * Version: 0.0.5
+ * Author: Gaston Figueroa (Uncorked Studios)
+ * Site: uncorkedstudios.com
+ * Licensed under the MIT license
+ */
 
-Android Export for Adobe Photoshop
-=========================================
-Version: 0.0.5
-Author: Gaston Figueroa (Uncorked Studios)
-Site: uncorkedstudios.com
-Updated: 11-20-13
 
-*/
+// Photoshop variables
 
 var docRef = app.activeDocument;
 activeLayer = docRef.activeLayer;
 
-main();
+
+// Run main function
+init();
+
+
+function init() {
+	saveFunc('xxhdpi');
+	saveFunc('xhdpi');
+	saveFunc('hdpi');
+	saveFunc('mdpi');
+	saveFunc('ldpi');
+}
 
 function resizeDoc(document, scale) {
 	var calcWidth  = activeLayer.bounds[2] - activeLayer.bounds[0],
@@ -79,14 +92,6 @@ function dupToNewFile() {
 	    var idslice = stringIDToTypeID( "slice" );
 	    desc15.putObject( idUsng, idslice, desc16 );
 	executeAction( idMk, desc15, DialogModes.NO );	
-}
-
-function main() {
-	saveFunc('xxhdpi');
-	saveFunc('xhdpi');
-	saveFunc('hdpi');
-	saveFunc('mdpi');
-	saveFunc('ldpi');
 }
 
 function saveFunc(dpi) {
