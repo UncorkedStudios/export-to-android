@@ -52,10 +52,29 @@ function resizeDoc(document, scale) {
 	}
 
 	// Resize temp document using Bicubic interpolation
-	document.resizeImage(UnitValue(newWidth,"px"),UnitValue(newHeight,"px"),null,ResampleMethod.BICUBIC);
+	resizeLayer(newWidth);
 
 	// Merge all layers inside the temp document
 	activeLayer2.merge();
+}
+
+
+// document.resizeImage doesn't seem to support scalestyles so we're using this workaround from http://ps-scripts.com/bb/viewtopic.php?p=14359
+function resizeLayer(newWidth) {
+	var idImgS = charIDToTypeID( "ImgS" );
+	var desc2 = new ActionDescriptor();
+	var idWdth = charIDToTypeID( "Wdth" );
+	var idPxl = charIDToTypeID( "#Pxl" );
+	desc2.putUnitDouble( idWdth, idPxl, newWidth);
+	var idscaleStyles = stringIDToTypeID( "scaleStyles" );
+	desc2.putBoolean( idscaleStyles, true );
+	var idCnsP = charIDToTypeID( "CnsP" );
+	desc2.putBoolean( idCnsP, true );
+	var idIntr = charIDToTypeID( "Intr" );
+	var idIntp = charIDToTypeID( "Intp" );
+	var idBcbc = charIDToTypeID( "Bcbc" );
+	desc2.putEnumerated( idIntr, idIntp, idBcbc );
+	executeAction( idImgS, desc2, DialogModes.NO );
 }
 
 function dupToNewFile() {	
@@ -95,7 +114,7 @@ function saveFunc(dpi) {
 		folder.create();
 	}
 
-	var saveFile = File(folder + "/" + Name + "--" + newWidth + "_" + newHeight+".png");
+	var saveFile = File(folder + "/" + Name + ".png");
 
 	var sfwOptions = new ExportOptionsSaveForWeb(); 
 		sfwOptions.format = SaveDocumentType.PNG; 
