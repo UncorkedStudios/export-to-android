@@ -10,17 +10,16 @@
 
 
 // Photoshop variables
-
 var docRef = app.activeDocument,
-	activeLayer = docRef.activeLayer;
+	activeLayer = docRef.activeLayer,
+	activeLayer2,
+	newWidth, newHeight;
 
 
 // Run main function
-
 init();
 
 // The other functions
-
 function init() {
 	saveFunc('xxhdpi');
 	saveFunc('xhdpi');
@@ -30,46 +29,56 @@ function init() {
 }
 
 function resizeDoc(document, scale) {
-	var calcWidth  = activeLayer.bounds[2] - activeLayer.bounds[0],
-	calcHeight = activeLayer.bounds[3] - activeLayer.bounds[1],
-	newWidth, newHeight;
+
+	var calcWidth  = activeLayer.bounds[2] - activeLayer.bounds[0], // Get layer's width
+	calcHeight = activeLayer.bounds[3] - activeLayer.bounds[1]; // Get layer's height
+	// newWidth, newHeight; 
 
 	if(scale === 'xxhdpi') {
 		newHeight = calcHeight;
 		newWidth = calcWidth;
 	} else if(scale === 'xhdpi') {
-		newHeight = calcHeight / 3 * 2;
-		newWidth = calcWidth / 3 * 2;
+		newHeight = Math.floor(calcHeight / 3 * 2);
+		newWidth = Math.floor(calcWidth / 3 * 2);
 	} else if(scale === 'hdpi') {
-		newHeight = calcHeight / 2;
-		newWidth = calcWidth / 2;
+		newHeight = Math.floor(calcHeight / 2);
+		newWidth = Math.floor(calcWidth / 2);
 	} else if(scale === 'mdpi') {
-		newHeight = calcHeight / 3;
-		newWidth = calcWidth / 3;
+		newHeight = Math.floor(calcHeight / 3);
+		newWidth = Math.floor(calcWidth / 3);
 	} else if(scale === 'ldpi') {
-		newHeight = calcHeight / 3 * .75;
-		newWidth = calcWidth / 3 * .75;
+		newHeight = Math.floor(calcHeight / 3 * .75);
+		newWidth = Math.floor(calcWidth / 3 * .75);
 	}
 
+	// Resize temp document using Bicubic interpolation
 	document.resizeImage(UnitValue(newWidth,"px"),UnitValue(newHeight,"px"),null,ResampleMethod.BICUBIC);
+
+	// Merge all layers inside the temp document
+	activeLayer2.merge();
 }
 
 function dupToNewFile() {	
 	var fileName = activeLayer.name.replace(/\.[^\.]+$/, ''), 
-		calcWidth  = activeLayer.bounds[2] - activeLayer.bounds[0],
-		calcHeight = activeLayer.bounds[3] - activeLayer.bounds[1],
+		calcWidth  = Math.ceil(activeLayer.bounds[2] - activeLayer.bounds[0]),
+		calcHeight = Math.ceil(activeLayer.bounds[3] - activeLayer.bounds[1]),
 		docResolution = docRef.resolution,
 		document = app.documents.add(calcWidth, calcHeight, docResolution, fileName, NewDocumentMode.RGB,
 		DocumentFill.TRANSPARENT);
 
 	app.activeDocument = docRef;
 
+	// Duplicated selection to a temp document
 	activeLayer.duplicate(document, ElementPlacement.INSIDE);
 
+	// Set focus on temp document
 	app.activeDocument = document;
+
+	// Assign a variable to the layer we pasted inside the temp document
 	activeLayer2 = document.activeLayer;
+
+	// Center the layer
 	activeLayer2.translate(-activeLayer2.bounds[0],-activeLayer2.bounds[1]);
-	activeLayer2.merge();
 }
 
 function saveFunc(dpi) {
@@ -86,7 +95,7 @@ function saveFunc(dpi) {
 		folder.create();
 	}
 
-	var saveFile = File(folder + "/" + Name +".png");
+	var saveFile = File(folder + "/" + Name + "--" + newWidth + "_" + newHeight+".png");
 
 	var sfwOptions = new ExportOptionsSaveForWeb(); 
 		sfwOptions.format = SaveDocumentType.PNG; 
@@ -96,6 +105,9 @@ function saveFunc(dpi) {
 		sfwOptions.quality = 100;
 		sfwOptions.PNG8 = false;
 
+	// Export the layer as a PNG
 	activeDocument.exportDocument(saveFile, ExportType.SAVEFORWEB, sfwOptions);
+
+	// Close the document without saving
 	activeDocument.close(SaveOptions.DONOTSAVECHANGES);
 }
