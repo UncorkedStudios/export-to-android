@@ -108,7 +108,7 @@ function saveFunc(dpi) {
 	var Name = docRef2.name.replace(/\.[^\.]+$/, ''), 
 		Ext = decodeURI(docRef2.name).replace(/^.*\./,''), 
 		Path = docRef.path,
-		folder = Folder(Path + '/assets/' + dpi);
+		folder = Folder(Path + '/assets/' + 'drawable-' + dpi);
 		
 	if(!folder.exists) {
 		folder.create();
