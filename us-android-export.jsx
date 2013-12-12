@@ -13,7 +13,9 @@
 var docRef = app.activeDocument,
 	activeLayer = docRef.activeLayer,
 	activeLayer2,
-	newWidth, newHeight;
+	newWidth, 
+	newHeight,
+	docName = docRef.name;
 
 
 // Run main function
@@ -21,12 +23,40 @@ init();
 
 // The other functions
 function init() {
-	saveFunc('xxhdpi');
-	saveFunc('xhdpi');
-	saveFunc('hdpi');
-	saveFunc('mdpi');
-	saveFunc('ldpi');
+	if(!isDocumentNew()) {
+		saveFunc('xxhdpi');
+		saveFunc('xhdpi');
+		saveFunc('hdpi');
+		saveFunc('mdpi');
+		saveFunc('ldpi');
+	} else {
+		alert("Please save your document before running this script.");
+	}
+
 }
+
+// Test if the document is new (unsaved)
+// http://2.adobe-photoshop-scripting.overzone.net/determine-if-file-has-never-been-saved-in-javascript-t264.html
+
+function isDocumentNew(doc){
+	// assumes doc is the activeDocument
+	cTID = function(s) { return app.charIDToTypeID(s); }
+	var ref = new ActionReference();
+	ref.putEnumerated( cTID("Dcmn"),
+	cTID("Ordn"),
+	cTID("Trgt") ); //activeDoc
+	var desc = executeActionGet(ref);
+	var rc = true;
+		if (desc.hasKey(cTID("FilR"))) { //FileReference
+		var path = desc.getPath(cTID("FilR"));
+		
+		if (path) {
+			rc = (path.absoluteURI.length == 0);
+		}
+	}
+	return rc;
+};
+
 
 function resizeDoc(document, scale) {
 
@@ -108,7 +138,7 @@ function saveFunc(dpi) {
 	var Name = docRef2.name.replace(/\.[^\.]+$/, ''), 
 		Ext = decodeURI(docRef2.name).replace(/^.*\./,''), 
 		Path = docRef.path,
-		folder = Folder(Path + '/assets/' + 'drawable-' + dpi);
+		folder = Folder(Path + '/' + docName + '-assets/' + 'drawable-' + dpi);
 		
 	if(!folder.exists) {
 		folder.create();
