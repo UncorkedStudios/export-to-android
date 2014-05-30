@@ -24,6 +24,7 @@ init();
 // The other functions
 function init() {
 	if(!isDocumentNew()) {
+		saveFunc('xxxhdpi');
 		saveFunc('xxhdpi');
 		saveFunc('xhdpi');
 		saveFunc('hdpi');
@@ -64,21 +65,24 @@ function resizeDoc(document, scale) {
 	calcHeight = activeLayer.bounds[3] - activeLayer.bounds[1]; // Get layer's height
 	// newWidth, newHeight; 
 
-	if(scale === 'xxhdpi') {
+	if(scale === 'xxxhdpi') {
 		newHeight = calcHeight;
 		newWidth = calcWidth;
+	} else if(scale === 'xxhdpi') {
+		newHeight = Math.floor(calcHeight * .75);
+		newWidth = Math.floor(calcWidth * .75);
 	} else if(scale === 'xhdpi') {
-		newHeight = Math.floor(calcHeight / 3 * 2);
-		newWidth = Math.floor(calcWidth / 3 * 2);
+		newHeight = Math.floor(calcHeight * .5);
+		newWidth = Math.floor(calcWidth * .5);
 	} else if(scale === 'hdpi') {
-		newHeight = Math.floor(calcHeight / 2);
-		newWidth = Math.floor(calcWidth / 2);
+		newHeight = Math.floor(calcHeight * .375);
+		newWidth = Math.floor(calcWidth * .375);
 	} else if(scale === 'mdpi') {
-		newHeight = Math.floor(calcHeight / 3);
-		newWidth = Math.floor(calcWidth / 3);
+		newHeight = Math.floor(calcHeight * .25);
+		newWidth = Math.floor(calcWidth * .25);
 	} else if(scale === 'ldpi') {
-		newHeight = Math.floor(calcHeight / 3 * .75);
-		newWidth = Math.floor(calcWidth / 3 * .75);
+		newHeight = Math.floor(calcHeight * .1875);
+		newWidth = Math.floor(calcWidth * .1875);
 	}
 
 	// Resize temp document using Bicubic interpolation
@@ -108,7 +112,7 @@ function resizeLayer(newWidth) {
 }
 
 function dupToNewFile() {	
-	var fileName = activeLayer.name.replace(/\.[^\.]+$/, ''), 
+	var fileName = docName.replace(/\.[^\.]+$/, ''),//activeLayer.name.replace(/\.[^\.]+$/, ''), 
 		calcWidth  = Math.ceil(activeLayer.bounds[2] - activeLayer.bounds[0]),
 		calcHeight = Math.ceil(activeLayer.bounds[3] - activeLayer.bounds[1]),
 		docResolution = docRef.resolution,
