@@ -3,7 +3,7 @@
 
 A Photoshop script for exporting assets for Android projects.
 
-The script works by duplicating the selected layer (or layergroup) to a new document, then scaling it to each of the 5 common Android sizes (XXHDPI, XHDPI, HDPI, MDPI, and LDPI) and then putting the files inside a folder next to the PSD.
+The script works by duplicating the selected layer (or layergroup) to a new document, then scaling it to each of the 6 common Android sizes (XXXHDPI, XXHDPI, XHDPI, HDPI, MDPI, and LDPI) and then putting the files inside a folder next to the PSD.
 
 ## Installation
 1. Download the script here
