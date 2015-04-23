@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * Android Assets for Photoshop
  * =============================
  *
@@ -23,6 +23,13 @@ init();
 
 // The other functions
 function init() {
+    
+    // save current ruler unit settings, so we can restore it
+    var ru = app.preferences.rulerUnits;
+    
+    // set ruler units to pixel to ensure scaling works as expected
+    app.preferences.rulerUnits = Units.PIXELS;    
+    
 	if(!isDocumentNew()) {
 		saveFunc('xxhdpi');
 		saveFunc('xhdpi');
@@ -33,6 +40,8 @@ function init() {
 		alert("Please save your document before running this script.");
 	}
 
+    // restore old ruler unit settings
+    app.preferences.rulerUnits = ru;
 }
 
 // Test if the document is new (unsaved)
