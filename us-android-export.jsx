@@ -2,7 +2,7 @@
  * Android Assets for Photoshop
  * =============================
  *
- * Version: 0.0.5
+ * Version: 1.0.0
  * Author: Gaston Figueroa (Uncorked Studios)
  * Site: uncorkedstudios.com
  * Licensed under the MIT license
@@ -13,15 +13,34 @@
 var docRef = app.activeDocument,
 	activeLayer = docRef.activeLayer,
 	activeLayer2,
-	newWidth, 
-	newHeight,
-	docName = docRef.name;
+	docName = docRef.name,
+	docPath = docRef.path,	
+	resolutionsObj = {
+		xxxhdpi : {
+			density : 1
+		},
+
+		xxhdpi : {
+			density : 0.75
+		},
+
+		xhdpi : {
+			density : 0.5
+		},
+
+		hdpi : {
+			density : 0.375
+		},
+
+		mdpi : {
+			density : 0.25
+		}
+	};
 
 
-// Run main function
+// Initialize
 init();
 
-// The other functions
 function init() {
     
     // save current ruler unit settings, so we can restore it
@@ -31,11 +50,9 @@ function init() {
     app.preferences.rulerUnits = Units.PIXELS;    
     
 	if(!isDocumentNew()) {
-		saveFunc('xxhdpi');
-		saveFunc('xhdpi');
-		saveFunc('hdpi');
-		saveFunc('mdpi');
-		saveFunc('ldpi');
+		for(resolution in resolutionsObj) {
+			saveFunc(resolution);
+		}
 	} else {
 		alert("Please save your document before running this script.");
 	}
@@ -56,7 +73,7 @@ function isDocumentNew(doc){
 	cTID("Trgt") ); //activeDoc
 	var desc = executeActionGet(ref);
 	var rc = true;
-		if (desc.hasKey(cTID("FilR"))) { //FileReference
+		if (desc.hasKey(cTID("FilR"))) { // FileReference
 		var path = desc.getPath(cTID("FilR"));
 		
 		if (path) {
@@ -67,30 +84,14 @@ function isDocumentNew(doc){
 };
 
 
-function resizeDoc(document, scale) {
-
+function resizeDoc(document, resolution) {
 	var calcWidth  = activeLayer.bounds[2] - activeLayer.bounds[0], // Get layer's width
 	calcHeight = activeLayer.bounds[3] - activeLayer.bounds[1]; // Get layer's height
-	// newWidth, newHeight; 
 
-	if(scale === 'xxhdpi') {
-		newHeight = calcHeight;
-		newWidth = calcWidth;
-	} else if(scale === 'xhdpi') {
-		newHeight = Math.floor(calcHeight / 3 * 2);
-		newWidth = Math.floor(calcWidth / 3 * 2);
-	} else if(scale === 'hdpi') {
-		newHeight = Math.floor(calcHeight / 2);
-		newWidth = Math.floor(calcWidth / 2);
-	} else if(scale === 'mdpi') {
-		newHeight = Math.floor(calcHeight / 3);
-		newWidth = Math.floor(calcWidth / 3);
-	} else if(scale === 'ldpi') {
-		newHeight = Math.floor(calcHeight / 3 * .75);
-		newWidth = Math.floor(calcWidth / 3 * .75);
-	}
+	var newWidth = Math.floor(calcWidth * resolutionsObj[resolution].density);
+	var newHeight = Math.floor(calcHeight * resolutionsObj[resolution].density);
 
-	// Resize temp document using Bicubic interpolation
+	// Resize temp document using Bicubic Interpolation
 	resizeLayer(newWidth);
 
 	// Merge all layers inside the temp document
@@ -139,29 +140,31 @@ function dupToNewFile() {
 	activeLayer2.translate(-activeLayer2.bounds[0],-activeLayer2.bounds[1]);
 }
 
-function saveFunc(dpi) {
+function saveFunc(resolution) {
 	dupToNewFile();
-	var docRef2 = app.activeDocument;
-	resizeDoc(docRef2, dpi);
+	
+	var tempDoc = app.activeDocument;
+	
+	resizeDoc(tempDoc, resolution);
 
-	var Name = docRef2.name.replace(/\.[^\.]+$/, ''), 
-		Ext = decodeURI(docRef2.name).replace(/^.*\./,''), 
-		Path = docRef.path,
-		folder = Folder(Path + '/' + docName + '-assets/' + 'drawable-' + dpi);
-		
-	if(!folder.exists) {
-		folder.create();
+	var tempDocName = tempDoc.name.replace(/\.[^\.]+$/, ''),
+		docFolder = Folder(docPath + '/' + docName + '-assets/' + 'drawable-' + resolution);
+
+	if(!docFolder.exists) {
+		docFolder.create();
 	}
 
-	var saveFile = File(folder + "/" + Name + ".png");
+	alert(docFolder);
+
+	var saveFile = File(docFolder + "/" + tempDocName + ".png");
 
 	var sfwOptions = new ExportOptionsSaveForWeb(); 
-		sfwOptions.format = SaveDocumentType.PNG; 
-		sfwOptions.includeProfile = false; 
-		sfwOptions.interlaced = 0; 
-		sfwOptions.optimized = true; 
-		sfwOptions.quality = 100;
-		sfwOptions.PNG8 = false;
+	sfwOptions.format = SaveDocumentType.PNG; 
+	sfwOptions.includeProfile = false; 
+	sfwOptions.interlaced = 0; 
+	sfwOptions.optimized = true; 
+	sfwOptions.quality = 100;
+	sfwOptions.PNG8 = false;
 
 	// Export the layer as a PNG
 	activeDocument.exportDocument(saveFile, ExportType.SAVEFORWEB, sfwOptions);
