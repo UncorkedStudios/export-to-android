@@ -31,7 +31,6 @@ function init() {
     app.preferences.rulerUnits = Units.PIXELS;    
     
 	if(!isDocumentNew()) {
-		saveFunc('xxxhdpi');
 		saveFunc('xxhdpi');
 		saveFunc('xhdpi');
 		saveFunc('hdpi');
@@ -73,24 +72,21 @@ function resizeDoc(document, scale) {
 	calcHeight = activeLayer.bounds[3] - activeLayer.bounds[1]; // Get layer's height
 	// newWidth, newHeight; 
 
-	if(scale === 'xxxhdpi') {
-		// x / 4 * 4 = x;
+	if(scale === 'xxhdpi') {
+		// x / 3 * 3 = x;
 		newHeight = calcHeight;
 		newWidth = calcWidth;
-	} else if(scale === 'xxhdpi') {
-		newHeight = Math.ceil(calcHeight / 4 * 3);
-		newWidth = Math.ceil(calcWidth / 4 * 3);
 	} else if(scale === 'xhdpi') {
-		// x / 4 * 2 = x / 2;
+		newHeight = Math.ceil(calcHeight / 3 * 2);
+		newWidth = Math.ceil(calcWidth / 3 * 2);
+	} else if(scale === 'hdpi') {
+		// x / 3 * 1.5 = x / 2;
 		newHeight = Math.ceil(calcHeight / 2);
 		newWidth = Math.ceil(calcWidth / 2);
-	} else if(scale === 'hdpi') {
-		newHeight = Math.ceil(calcHeight / 4 * 1.5);
-		newWidth = Math.ceil(calcWidth / 4 * 1.5);
 	} else if(scale === 'mdpi') {
-		// x / 4 * 1 = x / 4;
-		newHeight = Math.ceil(calcHeight / 4);
-		newWidth = Math.ceil(calcWidth / 4);
+		// x / 3 * 1 = x / 3;
+		newHeight = Math.ceil(calcHeight / 3);
+		newWidth = Math.ceil(calcWidth / 3);
 	}
 
 	// Resize temp document using Bicubic interpolation
