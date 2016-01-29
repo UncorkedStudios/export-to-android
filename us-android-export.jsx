@@ -35,7 +35,6 @@ function init() {
 		saveFunc('xhdpi');
 		saveFunc('hdpi');
 		saveFunc('mdpi');
-		saveFunc('ldpi');
 	} else {
 		alert("Please save your document before running this script.");
 	}
@@ -74,20 +73,20 @@ function resizeDoc(document, scale) {
 	// newWidth, newHeight; 
 
 	if(scale === 'xxhdpi') {
+		// x / 3 * 3 = x;
 		newHeight = calcHeight;
 		newWidth = calcWidth;
 	} else if(scale === 'xhdpi') {
-		newHeight = Math.floor(calcHeight / 3 * 2);
-		newWidth = Math.floor(calcWidth / 3 * 2);
+		newHeight = Math.ceil(calcHeight / 3 * 2);
+		newWidth = Math.ceil(calcWidth / 3 * 2);
 	} else if(scale === 'hdpi') {
-		newHeight = Math.floor(calcHeight / 2);
-		newWidth = Math.floor(calcWidth / 2);
+		// x / 3 * 1.5 = x / 2;
+		newHeight = Math.ceil(calcHeight / 2);
+		newWidth = Math.ceil(calcWidth / 2);
 	} else if(scale === 'mdpi') {
-		newHeight = Math.floor(calcHeight / 3);
-		newWidth = Math.floor(calcWidth / 3);
-	} else if(scale === 'ldpi') {
-		newHeight = Math.floor(calcHeight / 3 * .75);
-		newWidth = Math.floor(calcWidth / 3 * .75);
+		// x / 3 * 1 = x / 3;
+		newHeight = Math.ceil(calcHeight / 3);
+		newWidth = Math.ceil(calcWidth / 3);
 	}
 
 	// Resize temp document using Bicubic interpolation
