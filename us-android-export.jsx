@@ -43,6 +43,9 @@ init();
 
 function init() {
     
+    var qualifier = prompt('Enter qualifier names ( land , port , etc) . Leave empty for normal qualifier.')
+
+
     // save current ruler unit settings, so we can restore it
     var ru = app.preferences.rulerUnits;
     
@@ -51,7 +54,7 @@ function init() {
     
 	if(!isDocumentNew()) {
 		for(resolution in resolutionsObj) {
-			saveFunc(resolution);
+			saveFunc(resolution,qualifier);
 		}
 	} else {
 		alert("Please save your document before running this script.");
@@ -139,22 +142,30 @@ function dupToNewFile() {
 	// Center the layer
 	activeLayer2.translate(-activeLayer2.bounds[0],-activeLayer2.bounds[1]);
 }
-
-function saveFunc(resolution) {
+/*
+* resolution:   the target resolution
+* qualifier: the quallifiler to add in the forlder name:
+* Qulifier list : https://developer.android.com/guide/topics/resources/providing-resources.html#QualifierRules
+* Example: If qualifier is "port"> export forlder name will be "drawable-port-xhdpi'
+*/
+function saveFunc(resolution,qualifier) {
 	dupToNewFile();
 	
 	var tempDoc = app.activeDocument;
 	
 	resizeDoc(tempDoc, resolution);
 
+
 	var tempDocName = tempDoc.name.replace(/\.[^\.]+$/, ''),
 		docFolder = Folder(docPath + '/' + docName + '-assets/' + 'drawable-' + resolution);
-
+	if(qualifier!=undefined && qualifier.length>0){
+		tempDocName = tempDoc.name.replace(/\.[^\.]+$/, ''),
+		docFolder = Folder(docPath + '/' + docName + '-assets/' + 'drawable-'+qualifier+'-' + resolution);
+	}
 	if(!docFolder.exists) {
 		docFolder.create();
 	}
 
-	alert(docFolder);
 
 	var saveFile = File(docFolder + "/" + tempDocName + ".png");
 
